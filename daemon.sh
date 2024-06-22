@@ -58,7 +58,7 @@ while true; do
     # Read the second line of the script to check for hardware requirements
     req_line=$(sed -n '2p' "workloads/2.queued/$script")
     # Check if the second line contains hardware requirements
-    if [[ $req_line == "\#\ \{'requirements':*" ]]; then
+    if [[ $req_line == '# {"requirements": {'* ]]; then
         # Extract RAM and VRAM requirements from the line using jq
         req_ram=$(echo $req_line | sed 's/^# //' | jq -r '.requirements.ram // empty')
         req_vram=$(echo $req_line | sed 's/^# //' | jq -r '.requirements.vram // empty')
@@ -76,7 +76,7 @@ while true; do
         fi
     fi
 
-    echo "---- Script $script requires max RAM: $max_ram and max VRAM: $max_vram"
+    echo "---- Script $script requires min RAM: $min_available_ram and min VRAM: $min_available_vram"
 
     ram_availability=$(calculate_ram_availability)
     vram_availability=$(calculate_vram_availability)
