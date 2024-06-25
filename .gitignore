@@ -1,1 +1,5 @@
-workloads/
+workloads/1.to_run/
+workloads/2.queued/
+workloads/3.running/
+workloads/4.executed/
+workloads/4.failed/
