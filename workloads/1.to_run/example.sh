@@ -3,4 +3,4 @@
 
 current_file=$(basename "${BASH_SOURCE[0]}" .sh)
 echo "Current workload: $current_file"
-./workloads/launch.sh echo "Hello, World!"
+./workloads/launch.sh sh -c 'sleep 10 && echo "Hello, World!" && exit 0'

@@ -28,18 +28,6 @@ calculate_vram_availability() {
     nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits | head -n 1
 }
 
-move_to_executed() {
-    script=$1
-    echo "---- Moving $script to 4.executed"
-    mv "workloads/3.running/$script" "workloads/4.executed/$script"
-}
-
-move_to_failed() {
-    script=$1
-    echo "---- Moving $script to 4.failed"
-    mv "workloads/3.running/$script" "workloads/4.failed/$script"
-}
-
 no_scripts_printed=false
 
 while true; do
@@ -101,7 +89,22 @@ while true; do
     mv "workloads/2.queued/$script" "workloads/3.running/$script"
 
     # Execute the script in the background and move it to the appropriate folder based on the exit status
-    (source "workloads/3.running/$script" && move_to_executed "$script" || move_to_failed "$script") &
+    (
+        setsid bash -c "
+            source workloads/3.running/$script
+            exit_status=\$?
+            if [ \$exit_status -eq 0 ]; then
+                echo \"---- Moving $script to 4.executed\"
+                mv workloads/3.running/$script workloads/4.executed/$script
+            else
+                echo \"---- Moving $script to 4.failed\"
+                mv workloads/3.running/$script workloads/4.failed/$script
+            fi
+        " &>/dev/null &
+    )
+    echo "---- Waiting $ramp_up_time s for the script to ramp up"
+  
+    # trap 'echo "Interrupt received, waiting for script to finish..."; wait $script_pid; exit 0' INT
     sleep $ramp_up_time # time to wait for the training begin using resources
     no_scripts_printed=false
   else
