@@ -69,6 +69,8 @@ while true; do
     ram_availability=$(calculate_ram_availability)
     vram_availability=$(calculate_vram_availability)
 
+    echo "---- Available RAM: $ram_availability GB / Available VRAM: $vram_availability GB"
+
     while true; do
       if (( $(echo "$ram_availability > $min_available_ram" | bc -l) )) && (( $(echo "$vram_availability > $min_available_vram" | bc -l) )); then
         # If there is enough RAM and VRAM available, break the loop and continue with the execution
